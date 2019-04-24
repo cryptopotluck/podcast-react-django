@@ -1,17 +1,95 @@
-import React from "react";
+import React, { useState } from "react";
+import {Mutation} from "react-apollo";
+import {gql} from 'apollo-boost'
 import withStyles from "@material-ui/core/styles/withStyles";
-// import Typography from "@material-ui/core/Typography";
-// import Avatar from "@material-ui/core/Avatar";
-// import FormControl from "@material-ui/core/FormControl";
-// import Paper from "@material-ui/core/Paper";
-// import Input from "@material-ui/core/Input";
-// import InputLabel from "@material-ui/core/InputLabel";
-// import Button from "@material-ui/core/Button";
-// import Lock from "@material-ui/icons/Lock";
+import Typography from "@material-ui/core/Typography";
+import Avatar from "@material-ui/core/Avatar";
+import FormControl from "@material-ui/core/FormControl";
+import Paper from "@material-ui/core/Paper";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import Button from "@material-ui/core/Button";
+import Lock from "@material-ui/icons/Lock";
+import Gavel from "@material-ui/core/SvgIcon/SvgIcon";
+import Error from "../Shared/Error";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+
+
 
 const Login = ({ classes, setNewUser }) => {
-  return <div>Login</div>;
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (event, tokenAuth, client) => {
+    event.preventDefault();
+    const res = await tokenAuth();
+    localStorage.setItem('authToken', res.data.tokenAuth.token)
+    client.writeData({data: {isLoggedIn: true}})
+
+  };
+
+  return (
+      <div className={classes.root}>
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <Lock/>
+          </Avatar>
+          <Typography variant="title">
+              Login as Existing User
+          </Typography>
+          <Mutation mutation={LOGIN_MUTATION}
+                    variables={{
+                          username,
+                          password,
+                    }}
+          >
+            {(tokenAuth, { loading, error, called, client}) =>{
+              return(
+                 <form onSubmit={event => handleSubmit(event, tokenAuth, client)} className={classes.form}>
+                   <FormControl margin="normal" required fullWidth>
+                     <InputLabel htmlFor="username">Username</InputLabel>
+                     <Input id="username" onChange={event => setUsername(event.target.value)}/>
+                   </FormControl>
+                   <FormControl margin="normal" required fullWidth>
+                     <InputLabel htmlFor="password">Password</InputLabel>
+                     <Input id="password" type="password" onChange={event => setPassword(event.target.value)}/>
+                   </FormControl>
+                   <Button
+                     type="submit"
+                     fullWidth
+                     variant="contained"
+                     color="primary"
+                     disabled={loading || !username.trim() || !password.trim()  }
+                     className={classes.submit}
+                   >{loading ? "Fetching User...": "Login"}</Button>
+                   <Button
+                     onClick={() => setNewUser(true)}
+                     fullWidth
+                     variant="outlined"
+                     color="secondary"
+                   >New user? Register in here</Button>
+                   {/*Error handling*/}
+                   {error && <Error error={error}/>}
+                 </form>
+              )
+            }}
+          </Mutation>
+        </Paper>
+      </div>
+  );
 };
+
+const LOGIN_MUTATION = gql `
+mutation ($username:String!, $password: String!){
+  tokenAuth(username:$username, password:$password) {
+    token
+  }
+}
+`;
 
 const styles = theme => ({
   root: {
