@@ -3,7 +3,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import RadioIcon from "@material-ui/icons/RadioTwoTone";
-import FaceIcon from "@material-ui/icons/FaceTwoTone";
+import FaceIcon from "@material-ui/icons/AccountCircle";
 import Typography from "@material-ui/core/Typography";
 import {Link} from 'react-router-dom'
 import Signout from '../Auth/Signout'
