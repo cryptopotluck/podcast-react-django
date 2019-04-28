@@ -21,7 +21,7 @@ const TrackList = ({ classes, tracks }) => (
           <ExpansionPanel key={track.id}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
                 <ListItem className={classes.root}>
-                    <LikeTrack/>
+                    <LikeTrack trackId={track.id} likeCount={ track.likes.length }/>
                     <ListItemText
                         primaryTypographyProps={{
                           variant:"subheading",
@@ -32,15 +32,15 @@ const TrackList = ({ classes, tracks }) => (
                       </Link>
                       }
                     />
-                    <AudioPlayer/>
+                    <AudioPlayer url={track.url}/>
                 </ListItem>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
               <Typography variant="body1">{track.description}</Typography>
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
-              <UpdateTrack/>
-              <DeleteTrack/>
+              <UpdateTrack track={track}/>
+              <DeleteTrack track={track}/>
             </ExpansionPanelActions>
           </ExpansionPanel>
       ))}
